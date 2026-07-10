@@ -582,6 +582,27 @@ ATG</option><option value="13" selected="">ผลต่าง</option><option va
 </div>
 
 <!-- DASHBOARD -->
+<div id="apiDateOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9998;align-items:center;justify-content:center;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;width:340px;max-width:90vw;box-shadow:0 24px 64px rgba(0,0,0,0.4);">
+    <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:4px;">🔄 อัปเดตข้อมูลจาก API</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:16px;">เลือกช่วงวันที่ต้องการดึงข้อมูล IC05</div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div>
+        <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:4px;">จากวันที่</label>
+        <input type="date" id="apiDateFrom" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-family:var(--font);font-size:14px;">
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:4px;">ถึงวันที่</label>
+        <input type="date" id="apiDateTo" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-family:var(--font);font-size:14px;">
+      </div>
+      <div id="apiDateHint" style="font-size:11px;color:var(--text3);"></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:20px;">
+      <button onclick="closeApiDatePopup()" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px;color:var(--text2);font-family:var(--font);font-size:14px;cursor:pointer;">ยกเลิก</button>
+      <button onclick="confirmApiDateRange()" style="flex:1;background:var(--accent);border:none;border-radius:8px;padding:9px;color:#fff;font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;">🔄 ดึงข้อมูล</button>
+    </div>
+  </div>
+</div>
 <div id="apiToast"><span id="apiToastIcon"></span><span id="apiToastMsg"></span></div>
 <div id="dashboard" style="display: block;">
 
@@ -1366,7 +1387,7 @@ ATG</option><option value="13" selected="">ผลต่าง</option><option va
       <button class="theme-btn active" id="btnThemeDark" onclick="setTheme('dark')" title="Dark Mode">🌙</button>
       <button class="theme-btn" id="btnThemeLight" onclick="setTheme('light')" title="Light Mode">☀️</button>
     </div>
-    <button class="btn-topbar btn-refresh" id="btnRefreshAPI" onclick="refreshFromAPI()" title="ดึงข้อมูล IC05 ใหม่จาก API">
+    <button class="btn-topbar btn-refresh" id="btnRefreshAPI" onclick="openApiDatePopup()" title="ดึงข้อมูล IC05 ใหม่จาก API">
       <span id="btnRefreshIcon">🔄</span>
       <span id="btnRefreshLabel">อัปเดตข้อมูล</span>
     </button>
@@ -51678,7 +51699,45 @@ function showToast(msg, type='info', icon='ℹ️', duration=4000){
   if(duration>0) setTimeout(()=>{el.style.display='none';},duration);
 }
 
-async function refreshFromAPI(){
+// เปิด/ปิด Popup เลือกช่วงวันที่
+function openApiDatePopup(){
+  const overlay=document.getElementById('apiDateOverlay');
+  if(!overlay) return;
+  // Default: จาก-ถึง = เมื่อวาน
+  const y=new Date();y.setDate(y.getDate()-1);
+  const ystr=y.toISOString().slice(0,10);
+  const fromEl=document.getElementById('apiDateFrom');
+  const toEl=document.getElementById('apiDateTo');
+  if(!fromEl.value) fromEl.value=ystr;
+  if(!toEl.value) toEl.value=ystr;
+  updateApiDateHint();
+  fromEl.onchange=updateApiDateHint;
+  toEl.onchange=updateApiDateHint;
+  overlay.style.display='flex';
+}
+function closeApiDatePopup(){
+  const overlay=document.getElementById('apiDateOverlay');
+  if(overlay) overlay.style.display='none';
+}
+function updateApiDateHint(){
+  const from=document.getElementById('apiDateFrom').value;
+  const to=document.getElementById('apiDateTo').value;
+  const hint=document.getElementById('apiDateHint');
+  if(!from||!to){hint.textContent='';return;}
+  const days=Math.round((new Date(to)-new Date(from))/86400000)+1;
+  if(days<1){hint.textContent='⚠ วันที่ไม่ถูกต้อง (ถึงวันต้องไม่น้อยกว่าจากวัน)';hint.style.color='var(--red)';}
+  else{hint.textContent=`จะดึงข้อมูล ${days} วัน (เรียก API ${days} ครั้ง)`;hint.style.color='var(--text3)';}
+}
+function confirmApiDateRange(){
+  const from=document.getElementById('apiDateFrom').value;
+  const to=document.getElementById('apiDateTo').value;
+  if(!from||!to){showToast('กรุณาเลือกช่วงวันที่','error','⚠️',4000);return;}
+  if(new Date(to)<new Date(from)){showToast('ถึงวันต้องไม่น้อยกว่าจากวัน','error','⚠️',4000);return;}
+  closeApiDatePopup();
+  refreshFromAPI(from,to);
+}
+
+async function refreshFromAPI(dateFrom,dateTo){
   const btn=document.getElementById('btnRefreshAPI');
   const icon=document.getElementById('btnRefreshIcon');
   const label=document.getElementById('btnRefreshLabel');
@@ -51703,54 +51762,65 @@ async function refreshFromAPI(){
     if(!loginData.issuccess) throw new Error(`Login: ${loginData.message||'ไม่สำเร็จ'}`);
     const token=loginData.data.s;
 
-    showToast('Login สำเร็จ กำลังดึงข้อมูล IC05...','info','📡',0);
+    // สร้างรายการวันที่ต้องดึง
+    const dates=[];
+    let cur=new Date(dateFrom), end=new Date(dateTo);
+    while(cur<=end){dates.push(cur.toISOString().slice(0,10));cur.setDate(cur.getDate()+1);}
 
-    // Step 2: Read IC05
-    const readResp=await fetch(`${AMS_API_BASE}/Data/list/api_variances?date=yesterday`,{
-      method:'GET',
-      headers:{'Authorization':`Bearer ${token}`,'Accept':'application/json'}
-    });
-    if(!readResp.ok) throw new Error(`Read HTTP ${readResp.status}`);
-    const readData=await readResp.json();
-    if(!readData.issuccess) throw new Error(`Read: ${readData.message||'ไม่สำเร็จ'}`);
+    // Step 2: วนดึงแต่ละวัน
+    let allNewRecs=[];
+    for(let i=0;i<dates.length;i++){
+      const d=dates[i];
+      showToast(`กำลังดึงข้อมูล ${d} (${i+1}/${dates.length})...`,'info','📡',0);
+      // ส่ง date ทั้งใน query string และ body เพื่อให้ backend อ่านได้แน่นอน
+      // (บาง backend อ่าน date จาก body เท่านั้นถึงจะส่ง remark กลับมา)
+      const readResp=await fetch(`${AMS_API_BASE}/Data/list/api_variances?date=${d}`,{
+        method:'GET',
+        headers:{'Authorization':`Bearer ${token}`,'Accept':'application/json'}
+      });
+      if(!readResp.ok) throw new Error(`Read HTTP ${readResp.status} (${d})`);
+      const readData=await readResp.json();
+      if(!readData.issuccess) continue;
+      const list=readData.data.list||[];
+      // แปลง + คำนวณ variance = close_atg - close_calc (ตรงกับ Python)
+      const recs=list.map(r=>{
+        const closeAtg=parseFloat(r.close_atg)||0;
+        const closeCalc=parseFloat(r.close_calc)||0;
+        return {
+          id:     String(r.id||''),
+          name:   String(r.name||''),
+          date:   (r.close_datetime||'').slice(0,10),
+          tank:   String(r.tank||''),
+          sales:  parseFloat(r.sales)||0,
+          variance: Math.round((closeAtg-closeCalc)*100)/100,
+          remark: String(r.remark||''),
+          remarkAddedDate: null
+        };
+      }).filter(r=>r.id&&/^\d+$/.test(r.id)&&r.date);
+      allNewRecs=allNewRecs.concat(recs);
+    }
 
-    const list=readData.data.list||[];
-    if(!list.length) throw new Error('ไม่มีข้อมูล IC05 ในวันนี้');
+    if(!allNewRecs.length) throw new Error('ไม่มีข้อมูล IC05 ในช่วงที่เลือก');
 
-    // Step 3: แปลง Response → records format แล้วอัปเดต _storedRecords
-    const newRecs=list.map(r=>({
-      id:     String(r.id||''),
-      name:   String(r.name||''),
-      date:   (r.close_datetime||'').slice(0,10),
-      tank:   String(r.tank||''),
-      sales:  parseFloat(r.sales)||0,
-      variance: parseFloat(r.variance)||0,
-      remark: String(r.remark||''),
-      remarkAddedDate: null
-    })).filter(r=>r.id&&/^\d+$/.test(r.id)&&r.date);
-
-    // Merge เข้า _storedRecords (เพิ่ม/อัปเดต ไม่ลบของเก่า)
+    // Step 3: Merge เข้า _storedRecords
     const existingByKey={};
-    (_storedRecords||[]).forEach(r=>{
-      existingByKey[`${r.id}||${r.tank}||${r.date}`]=r;
-    });
-    newRecs.forEach(r=>{
+    (_storedRecords||[]).forEach(r=>{existingByKey[`${r.id}||${r.tank}||${r.date}`]=r;});
+    const todayStr=new Date().toISOString().slice(0,10);
+    allNewRecs.forEach(r=>{
       const key=`${r.id}||${r.tank}||${r.date}`;
-      // ถ้า remark เปลี่ยน อัปเดต remarkAddedDate
       const old=existingByKey[key];
-      if(old&&!old.remark&&r.remark) r.remarkAddedDate=new Date().toISOString().slice(0,10);
+      if(old&&!old.remark&&r.remark) r.remarkAddedDate=todayStr;
       else if(old) r.remarkAddedDate=old.remarkAddedDate||null;
       existingByKey[key]=r;
     });
     _storedRecords=Object.values(existingByKey);
 
-    // Step 4: Rebuild stations และ Re-render
+    // Step 4: Rebuild + Re-render
     const from=document.getElementById('dateFrom')?document.getElementById('dateFrom').value:meta.monthly_start;
     const to=document.getElementById('dateTo')?document.getElementById('dateTo').value:meta.max_date;
-    // อัปเดต max_date ถ้าใหม่กว่า
-    const newDates=newRecs.map(r=>r.date).filter(Boolean).sort();
-    if(newDates.length&&newDates[newDates.length-1]>meta.max_date){
-      meta.max_date=newDates[newDates.length-1];
+    const allDates=allNewRecs.map(r=>r.date).filter(Boolean).sort();
+    if(allDates.length&&allDates[allDates.length-1]>meta.max_date){
+      meta.max_date=allDates[allDates.length-1];
       if(document.getElementById('lblMaxDateClock')){
         document.getElementById('lblMaxDateClock').textContent=meta.max_date;
         document.getElementById('lblMaxDateClock').style.opacity='1';
@@ -51766,7 +51836,7 @@ async function refreshFromAPI(){
     btn.className='btn-topbar btn-refresh success';
     icon.textContent='✅';
     label.textContent='อัปเดตแล้ว';
-    showToast(`อัปเดตสำเร็จ ${newRecs.length.toLocaleString()} records (${newDates[0]||''})`, 'success', '✅', 5000);
+    showToast(`อัปเดตสำเร็จ ${allNewRecs.length.toLocaleString()} records (${dates.length} วัน)`, 'success', '✅', 5000);
     setTimeout(()=>{
       btn.className='btn-topbar btn-refresh';
       icon.textContent='🔄';
@@ -51774,7 +51844,6 @@ async function refreshFromAPI(){
     }, 5000);
 
   } catch(err) {
-    // ── Error State ──
     btn.className='btn-topbar btn-refresh error';
     icon.textContent='❌';
     label.textContent='ล้มเหลว';
