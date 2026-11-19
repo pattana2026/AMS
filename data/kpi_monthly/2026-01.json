@@ -1,0 +1,18 @@
+{
+ "month": "2026-01",
+ "generatedAt": "2026-11-17T04:14:45.593904",
+ "asof": "2026-11-17",
+ "running": false,
+ "partial": false,
+ "data_from": "2026-01-01",
+ "people": {
+  "Worrapote": {
+   "events": 19,
+   "tankdays": 19,
+   "tanks": 1,
+   "days": 19,
+   "via_tag": 0,
+   "via_owner": 19
+  }
+ }
+}

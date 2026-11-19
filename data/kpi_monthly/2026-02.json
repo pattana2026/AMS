@@ -1,0 +1,26 @@
+{
+ "month": "2026-02",
+ "generatedAt": "2026-11-17T04:14:45.622494",
+ "asof": "2026-11-17",
+ "running": false,
+ "partial": false,
+ "data_from": "2026-02-01",
+ "people": {
+  "Pichai": {
+   "events": 2,
+   "tankdays": 2,
+   "tanks": 1,
+   "days": 2,
+   "via_tag": 0,
+   "via_owner": 2
+  },
+  "Worrapote": {
+   "events": 5,
+   "tankdays": 5,
+   "tanks": 1,
+   "days": 5,
+   "via_tag": 0,
+   "via_owner": 5
+  }
+ }
+}

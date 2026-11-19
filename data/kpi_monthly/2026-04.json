@@ -1,0 +1,18 @@
+{
+ "month": "2026-04",
+ "generatedAt": "2026-11-17T04:14:45.683394",
+ "asof": "2026-11-17",
+ "running": false,
+ "partial": false,
+ "data_from": "2026-04-01",
+ "people": {
+  "Chatchai": {
+   "events": 5,
+   "tankdays": 5,
+   "tanks": 2,
+   "days": 5,
+   "via_tag": 0,
+   "via_owner": 5
+  }
+ }
+}

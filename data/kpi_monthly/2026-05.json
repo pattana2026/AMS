@@ -1,0 +1,26 @@
+{
+ "month": "2026-05",
+ "generatedAt": "2026-11-17T04:14:45.721310",
+ "asof": "2026-11-17",
+ "running": false,
+ "partial": false,
+ "data_from": "2026-05-01",
+ "people": {
+  "Chatchai": {
+   "events": 49,
+   "tankdays": 49,
+   "tanks": 11,
+   "days": 27,
+   "via_tag": 0,
+   "via_owner": 49
+  },
+  "Worrapote": {
+   "events": 1,
+   "tankdays": 1,
+   "tanks": 1,
+   "days": 1,
+   "via_tag": 0,
+   "via_owner": 1
+  }
+ }
+}

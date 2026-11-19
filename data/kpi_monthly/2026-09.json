@@ -1,0 +1,34 @@
+{
+ "month": "2026-09",
+ "generatedAt": "2026-11-17T04:14:45.806565",
+ "asof": "2026-11-17",
+ "running": false,
+ "partial": true,
+ "data_from": "",
+ "people": {
+  "Chatchai": {
+   "events": 1654,
+   "tankdays": 605,
+   "tanks": 534,
+   "days": 24,
+   "via_tag": 158,
+   "via_owner": 1496
+  },
+  "Pichai": {
+   "events": 488,
+   "tankdays": 266,
+   "tanks": 256,
+   "days": 15,
+   "via_tag": 0,
+   "via_owner": 488
+  },
+  "Worrapote": {
+   "events": 524,
+   "tankdays": 243,
+   "tanks": 209,
+   "days": 16,
+   "via_tag": 0,
+   "via_owner": 524
+  }
+ }
+}
