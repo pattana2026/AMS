@@ -1,18 +1,18 @@
 {
  "month": "2026-11",
- "generatedAt": "2026-11-20T10:04:42.706785",
- "asof": "2026-11-20",
+ "generatedAt": "2026-11-24T08:58:48.351089",
+ "asof": "2026-11-24",
  "running": true,
  "partial": true,
  "data_from": "2026-11-01",
  "people": {
   "Chatchai": {
-   "events": 3665,
-   "tankdays": 1727,
-   "tanks": 868,
-   "days": 19,
-   "via_tag": 2268,
-   "via_owner": 1397
+   "events": 4348,
+   "tankdays": 2046,
+   "tanks": 943,
+   "days": 23,
+   "via_tag": 2894,
+   "via_owner": 1454
   },
   "Patt": {
    "events": 1,
@@ -23,20 +23,20 @@
    "via_owner": 0
   },
   "Pichai": {
-   "events": 2946,
-   "tankdays": 1407,
-   "tanks": 675,
-   "days": 14,
-   "via_tag": 251,
-   "via_owner": 2695
+   "events": 3218,
+   "tankdays": 1575,
+   "tanks": 701,
+   "days": 18,
+   "via_tag": 253,
+   "via_owner": 2965
   },
   "Worrapote": {
-   "events": 2803,
-   "tankdays": 1276,
-   "tanks": 684,
-   "days": 16,
-   "via_tag": 569,
-   "via_owner": 2234
+   "events": 3548,
+   "tankdays": 1589,
+   "tanks": 780,
+   "days": 20,
+   "via_tag": 1157,
+   "via_owner": 2391
   }
  }
 }
