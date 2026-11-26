@@ -1,17 +1,17 @@
 {
  "month": "2026-11",
- "generatedAt": "2026-11-26T08:57:38.477083",
+ "generatedAt": "2026-11-26T10:24:26.790834",
  "asof": "2026-11-26",
  "running": true,
  "partial": true,
  "data_from": "2026-11-01",
  "people": {
   "Chatchai": {
-   "events": 4601,
-   "tankdays": 2117,
-   "tanks": 978,
+   "events": 4632,
+   "tankdays": 2130,
+   "tanks": 984,
    "days": 25,
-   "via_tag": 3111,
+   "via_tag": 3142,
    "via_owner": 1490
   },
   "Patt": {
@@ -31,11 +31,11 @@
    "via_owner": 3222
   },
   "Worrapote": {
-   "events": 4379,
-   "tankdays": 1772,
+   "events": 4388,
+   "tankdays": 1781,
    "tanks": 875,
    "days": 21,
-   "via_tag": 1950,
+   "via_tag": 1959,
    "via_owner": 2429
   }
  }
